@@ -213,12 +213,7 @@ var Slider = React.createClass({
     var newValue = nextProps.value;
 
     if (this.props.value !== newValue) {
-      if (this.props.animateTransitions) {
-        this._setCurrentValueAnimated(newValue);
-      }
-      else {
-        this._setCurrentValue(newValue);
-      }
+      this._setCurrentValue(newValue);
     }
   },
   shouldComponentUpdate: function(nextProps, nextState) {
@@ -423,19 +418,20 @@ var Slider = React.createClass({
   },
 
   _setCurrentValue(value: number) {
-    this.state.value.setValue(value);
-  },
+    if (this.props.animateTransitions) {
+      var animationType   = this.props.animationType;
+      var animationConfig = Object.assign(
+            {},
+            DEFAULT_ANIMATION_CONFIGS[animationType],
+            this.props.animationConfig,
+            {toValue : value}
+          );
 
-  _setCurrentValueAnimated(value: number) {
-    var animationType   = this.props.animationType;
-    var animationConfig = Object.assign(
-          {},
-          DEFAULT_ANIMATION_CONFIGS[animationType],
-          this.props.animationConfig,
-          {toValue : value}
-        );
-
-    Animated[animationType](this.state.value, animationConfig).start();
+      Animated[animationType](this.state.value, animationConfig).start();
+    }
+    else {
+      this.state.value.setValue(value);
+    }
   },
 
   _fireChangeEvent(event) {
