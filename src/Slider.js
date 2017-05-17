@@ -427,7 +427,13 @@ var Slider = React.createClass({
             {toValue : value}
           );
 
-      Animated[animationType](this.state.value, animationConfig).start();
+      const update = setInterval(() => {
+        this._fireChangeEvent('onValueChange');
+      }, 80);
+
+      Animated[animationType](this.state.value, animationConfig).start(() => {
+        clearInterval(update);
+      });
     }
     else {
       this.state.value.setValue(value);
